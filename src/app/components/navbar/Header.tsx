@@ -1,0 +1,119 @@
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, X, ShoppingCart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+function Header() {
+  const pathname = usePathname();
+  const [navs, setNavs] = useState<{ name: string; slug: string }[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      setNavs(data); 
+    };
+
+    fetchSettings();
+  }, []);
+
+  return (
+    <header className="text-white shadow-md p-4 fixed w-full z-50 top-0">
+      <div className="container mx-auto flex justify-between items-center">
+        <button
+          className="md:hidden"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          <motion.div
+            animate={{ rotate: isSidebarOpen ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {isSidebarOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </motion.div>
+        </button>
+        <div className="text-xl font-bold">لوگو</div>
+
+        <nav className="hidden md:flex space-x-6">
+          <Link
+            href="/"
+            className={`text-lg ${
+              pathname === "/" ? "text-white" : "text-gray-800"
+            } hover:text-gray-700`}
+          >
+            خانه
+          </Link>
+          {navs.map((item, index) => (
+            <Link
+              key={index}
+              href={`/category/${item.slug}`}
+              className={`text-lg ${
+                pathname === `/category/${item.slug}`
+                  ? "text-white"
+                  : "text-gray-600"
+              } hover:text-gray-500`}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Shop Cart */}
+        <div className="flex items-center space-x-4">
+          <ShoppingCart className="w-6 h-6 cursor-pointer" />
+        </div>
+      </div>
+
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-opacity-50 z-50"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.3 }}
+              className="bg-white w-64 h-full p-5 fixed right-0 top-0 shadow-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="mb-5" onClick={() => setIsSidebarOpen(false)}>
+                <X className="w-6 h-6" />
+              </button>
+              <nav className="flex flex-col space-y-4">
+                <Link
+                  href="/"
+                  className="text-lg text-gray-800 hover:text-gray-500"
+                >
+                  خانه
+                </Link>
+                {navs.map((item, index) => (
+                  <Link
+                    key={index}
+                    href={`/category/${item.slug}`}
+                    className="text-lg text-gray-800 hover:text-gray-500"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
+
+export default Header;
