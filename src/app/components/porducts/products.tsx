@@ -7,6 +7,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import { motion } from "framer-motion";
 import "swiper/css";
 import "swiper/css/navigation";
+import Link from "next/link";
 
 function Products() {
   const [products, setProducts] = useState<Shoe[]>([]);
@@ -85,14 +86,13 @@ function Products() {
                 className="my-auto"
               >
                 <h3>قیمت: {activeProduct.price}</h3>
-                <button
-                  className="btn btn-primary"
+                <Link href={`/preview/${activeProduct.id}`} className="btn btn-primary"
                   style={{
-                    color: "var(--secondary-color)",
+                    color: "white",
                   }}
                 >
-                  اضافه کردن به سبد خرید
-                </button>
+                  پیش نمایش محصول
+                </Link>
               </motion.div>
             </div>
           </motion.div>
