@@ -41,68 +41,81 @@ function Products() {
       <div className=" w-full">
         {activeProduct && activeProduct.images.length > 0 && (
           <motion.div
-          key={activeProduct.id}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex justify-around">
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="my-auto"
-            >
-              <h4>{activeProduct.name}</h4>
-              <p>{activeProduct.description}</p>
-            </motion.div>
-        
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}   
-              transition={{
-                duration: 1,      
-                ease: "easeIn",  
-                delay: 0.4,       
-              }}
-              className="my-auto"
-            >
-              <Image
-                src={activeProduct.images[0].url}
-                alt={activeProduct.name}
-                width={400}
-                height={300}
-                className="object-cover rounded-lg"
-                unoptimized
-              />
-            </motion.div>
-        
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="my-auto"
-            >
-              <h3>قیمت: {activeProduct.price}</h3>
-              <button className="btn btn-primary" style={{
-                  color: "var(--secondary-color)"
-                }}>اضافه کردن به سبد خرید</button>
-            </motion.div>
-          </div>
-        </motion.div>
-        
+            key={activeProduct.id}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex justify-around">
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="my-auto"
+              >
+                <h4>{activeProduct.name}</h4>
+                <p>{activeProduct.description}</p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 1,
+                  ease: "easeIn",
+                  delay: 0.4,
+                }}
+                className="my-auto"
+              >
+                <Image
+                  src={activeProduct.images[0].url}
+                  alt={activeProduct.name}
+                  width={400}
+                  height={300}
+                  className="object-cover rounded-lg"
+                  unoptimized
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="my-auto"
+              >
+                <h3>قیمت: {activeProduct.price}</h3>
+                <button
+                  className="btn btn-primary"
+                  style={{
+                    color: "var(--secondary-color)",
+                  }}
+                >
+                  اضافه کردن به سبد خرید
+                </button>
+              </motion.div>
+            </div>
+          </motion.div>
         )}
       </div>
 
-      <div className="absolute bottom-2 left-0 w-full">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 1,
+          ease: "easeIn",
+          delay: 0.4,
+        }}
+        className="absolute bottom-2 left-0 w-full"
+      >
         <Swiper
           modules={[Navigation, Autoplay]}
           spaceBetween={10}
           slidesPerView={3}
           navigation
           centeredSlides={true}
-          autoplay={{ delay: 5000, disableOnInteraction: true }}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
           onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
           className="w-full"
         >
@@ -119,16 +132,19 @@ function Products() {
                     unoptimized
                   />
                 )}
-                <h2 className="text-center" style={{
-                  color: "var(--secondary-color)"
-                }}>
+                <h2
+                  className="text-center"
+                  style={{
+                    color: "var(--secondary-color)",
+                  }}
+                >
                   {shoe.name}
                 </h2>
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
+      </motion.div>
     </div>
   );
 }

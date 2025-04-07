@@ -14,14 +14,19 @@ function Header() {
     const fetchSettings = async () => {
       const res = await fetch("/api/categories");
       const data = await res.json();
-      setNavs(data); 
+      setNavs(data);
     };
 
     fetchSettings();
   }, []);
 
   return (
-    <header className="text-white shadow-md p-4 fixed w-full z-50 top-0">
+    <motion.header
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.9, ease: "easeOut" }}
+      className="text-white shadow-md p-4 fixed w-full z-50 top-0"
+    >
       <div className="container mx-auto flex justify-between items-center">
         <button
           className="md:hidden"
@@ -69,7 +74,6 @@ function Header() {
           <ShoppingCart className="w-6 h-6 cursor-pointer" />
         </div>
       </div>
-
       {/* Mobile Sidebar */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -112,7 +116,7 @@ function Header() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 }
 

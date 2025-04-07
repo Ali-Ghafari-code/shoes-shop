@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -10,43 +10,38 @@ export default function AddShoePage() {
     categoryId: "",
     categorySlug: "",
     sizes: "",
-    mainColor: "#000000", // مقدار پیش‌فرض مشکی
-    secondaryColor: "#ffffff", // مقدار پیش‌فرض سفید
+    mainColor: "#000000",
+    secondaryColor: "#ffffff",
     existing: true,
   });
 
-  const [image, setImage] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
   const [categories, setCategories] = useState<
-    { id: string; name: string; slug: string }[] 
+    { id: string; name: string; slug: string }[]
   >([]);
 
   useEffect(() => {
     fetch("/api/categories")
       .then((res) => res.json())
-      .then((data: { id: string; name: string; slug: string }[]) =>
+      .then((data) =>
         setCategories(
-          data.map((cat) => ({ id: cat.id, name: cat.name, slug: cat.slug }))
+          data.map((cat) => ({
+            id: cat.id,
+            name: cat.name,
+            slug: cat.slug,
+          }))
         )
       );
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
-      extractColors(e.target.files[0]); // فراخوانی برای استخراج رنگ‌ها از تصویر
-    }
-  };
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      const newImages = [...images, ...files];
+      setImages(newImages);
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCategory = categories.find(
-      (cat) => cat.id === e.target.value
-    );
-    if (selectedCategory) {
-      setShoe({
-        ...shoe,
-        categoryId: selectedCategory.id,
-        categorySlug: selectedCategory.slug,
-      });
+      // فقط از اولین عکس جدید رنگ بگیر
+      if (files[0]) extractColors(files[0]);
     }
   };
 
@@ -62,13 +57,26 @@ export default function AddShoePage() {
     const data = await res.json();
 
     if (data.colors) {
-      setShoe({
-        ...shoe,
-        mainColor: data.colors[0] || "#000000",  // رنگ اصلی
-        secondaryColor: data.colors[1] || "#ffffff",  // رنگ فرعی
-      });
+      setShoe((prev) => ({
+        ...prev,
+        mainColor: data.colors[0] || "#000000",
+        secondaryColor: data.colors[1] || "#ffffff",
+      }));
     } else {
       toast.error("❌ مشکل در استخراج رنگ‌ها");
+    }
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategory = categories.find(
+      (cat) => cat.id === e.target.value
+    );
+    if (selectedCategory) {
+      setShoe({
+        ...shoe,
+        categoryId: selectedCategory.id,
+        categorySlug: selectedCategory.slug,
+      });
     }
   };
 
@@ -86,9 +94,9 @@ export default function AddShoePage() {
     formData.append("secondaryColor", shoe.secondaryColor);
     formData.append("existing", String(shoe.existing));
 
-    if (image) {
-      formData.append("image", image);
-    }
+    images.forEach((image) => {
+      formData.append("images", image);
+    });
 
     const response = await fetch("/api/shoes", {
       method: "POST",
@@ -96,7 +104,7 @@ export default function AddShoePage() {
     });
 
     if (response.ok) {
-      toast.success("✅ کفش جدید با موفقیت اضافه شد!");
+      toast.success("✅ کفش با موفقیت اضافه شد!");
       setShoe({
         name: "",
         description: "",
@@ -108,7 +116,7 @@ export default function AddShoePage() {
         secondaryColor: "#ffffff",
         existing: true,
       });
-      setImage(null);
+      setImages([]);
     } else {
       toast.error("❌ خطا در اضافه کردن کفش");
     }
@@ -124,53 +132,58 @@ export default function AddShoePage() {
         <h1 className="text-3xl font-bold text-center text-gray-800">
           ➕ افزودن کفش جدید
         </h1>
+
         <input
           type="text"
           placeholder="نام کفش"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={shoe.name}
           onChange={(e) => setShoe({ ...shoe, name: e.target.value })}
           required
+          className="w-full px-4 py-2 border rounded-lg"
         />
+
         <input
           type="text"
           placeholder="توضیحات"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={shoe.description}
           onChange={(e) => setShoe({ ...shoe, description: e.target.value })}
           required
+          className="w-full px-4 py-2 border rounded-lg"
         />
+
         <input
           type="number"
           placeholder="قیمت"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={shoe.price}
           onChange={(e) => setShoe({ ...shoe, price: e.target.value })}
           required
+          className="w-full px-4 py-2 border rounded-lg"
         />
+
         <select
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={shoe.categoryId}
           onChange={handleCategoryChange}
           required
+          className="w-full px-4 py-2 border rounded-lg"
         >
           <option value="">انتخاب دسته‌بندی</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
             </option>
           ))}
         </select>
+
         <input
           type="text"
           placeholder="سایزها (مثلاً: 41,42,43)"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={shoe.sizes}
           onChange={(e) => setShoe({ ...shoe, sizes: e.target.value })}
           required
+          className="w-full px-4 py-2 border rounded-lg"
         />
-        
-        {/* انتخاب رنگ اصلی */}
+
+        {/* رنگ اصلی */}
         <div className="flex items-center justify-between">
           <label>🎨 رنگ اصلی:</label>
           <input
@@ -179,13 +192,9 @@ export default function AddShoePage() {
             onChange={(e) => setShoe({ ...shoe, mainColor: e.target.value })}
             className="w-12 h-12 rounded-full border-2"
           />
-          <div
-            className="w-12 h-12 rounded-full border-2"
-            style={{ backgroundColor: shoe.mainColor }}
-          ></div>
         </div>
 
-        {/* انتخاب رنگ فرعی */}
+        {/* رنگ فرعی */}
         <div className="flex items-center justify-between">
           <label>🎨 رنگ فرعی:</label>
           <input
@@ -196,22 +205,43 @@ export default function AddShoePage() {
             }
             className="w-12 h-12 rounded-full border-2"
           />
-          <div
-            className="w-12 h-12 rounded-full border-2"
-            style={{ backgroundColor: shoe.secondaryColor }}
-          ></div>
         </div>
 
         <input
           type="file"
           accept="image/*"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onChange={handleFileChange}
+          multiple
+          onChange={handleFileChange}  // اتصال درست handleFileChange به onChange
+          className="w-full px-4 py-2 border rounded-lg"
           required
         />
+
+        {images.length > 0 && (
+          <div className="grid grid-cols-3 gap-4">
+            {images.map((img, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={URL.createObjectURL(img)}
+                  alt={`preview-${index}`}
+                  className="w-full h-28 object-cover rounded-lg shadow-md"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImages(images.filter((_, i) => i !== index));
+                  }}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs opacity-80 group-hover:opacity-100"
+                >
+                  ❌
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
         >
           ➕ افزودن کفش
         </button>

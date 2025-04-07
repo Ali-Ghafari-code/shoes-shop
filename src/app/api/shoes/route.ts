@@ -9,11 +9,13 @@ export async function GET() {
       category: true,
       images: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return NextResponse.json(shoes);
 }
-
 
 export async function POST(req: Request) {
   try {
@@ -23,8 +25,8 @@ export async function POST(req: Request) {
     const description = formData.get("description") as string;
     const price = parseFloat(formData.get("price") as string);
     const categoryId = formData.get("categoryId") as string;
-    const mainColor = formData.get("mainColor") as string; // دریافت رنگ اصلی
-    const secondaryColor = formData.get("secondaryColor") as string; // دریافت رنگ فرعی
+    const mainColor = formData.get("mainColor") as string;
+    const secondaryColor = formData.get("secondaryColor") as string;
     const sizes = formData.get("sizes")
       ? formData
           .get("sizes")
@@ -33,18 +35,19 @@ export async function POST(req: Request) {
           .map((size) => ({ size: parseInt(size) }))
       : [];
     const existing = formData.get("existing") === "true";
-    const image = formData.get("image") as File;
 
-    let imageUrl = "";
+    // دریافت همه عکس‌ها
+    const images = formData.getAll("images") as File[];
+    const imageUrls: string[] = [];
 
-    if (image) {
+    for (const image of images) {
       const bytes = await image.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
       const filePath = join(process.cwd(), "public/uploads", image.name);
-      await writeFile(filePath, buffer); // ذخیره عکس در `public/uploads`
+      await writeFile(filePath, buffer);
 
-      imageUrl = `/uploads/${image.name}`;
+      imageUrls.push(`/uploads/${image.name}`);
     }
 
     const newShoe = await prisma.shoe.create({
@@ -55,15 +58,20 @@ export async function POST(req: Request) {
         categoryId,
         mainColor,
         secondaryColor,
+        existing,
         sizes: {
           create: sizes,
         },
-        existing,
-        images: imageUrl
-          ? {
-              create: [{ url: imageUrl }],
-            }
-          : undefined,
+        images: {
+          create: imageUrls.map((url) => ({
+            url,
+          })),
+        },
+      },
+      include: {
+        images: true,
+        sizes: true,
+        category: true,
       },
     });
 
