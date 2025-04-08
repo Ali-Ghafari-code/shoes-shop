@@ -1,20 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Shoe } from "@/types/shoe";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
-import { motion } from "framer-motion";
 import "swiper/css";
 import "swiper/css/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { Shoe } from "@/types/shoe";
 
-export default function Products({ initialProducts }: { initialProducts: Shoe[] }) {
-  const [products] = useState(initialProducts);
+export default function CategoryClientView({ shoes }: { shoes: Shoe[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const activeProduct = products.length > 0 ? products[activeIndex] : null;
+  const activeProduct = shoes[activeIndex];
 
   useEffect(() => {
     if (activeProduct) {
@@ -30,36 +28,21 @@ export default function Products({ initialProducts }: { initialProducts: Shoe[] 
   }, [activeProduct]);
 
   return (
-    <div className="relative h-[86vh] w-full flex flex-col items-center justify-between overflow-y-clip">
+    <div className="relative h-[86vh] w-full flex flex-col items-center justify-between overflow-y-clip ">
       <div className="w-full">
         {activeProduct && activeProduct.images.length > 0 && (
           <motion.div
             key={activeProduct.id}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.6 }}
           >
             <div className="flex justify-around">
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="my-auto"
-              >
+              <motion.div className="my-auto">
                 <h4>{activeProduct.name}</h4>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 1,
-                  ease: "easeIn",
-                  delay: 0.4,
-                }}
-                className="my-auto"
-              >
+              <motion.div className="my-auto">
                 <Image
                   src={activeProduct.images[0].url}
                   alt={activeProduct.name}
@@ -70,18 +53,11 @@ export default function Products({ initialProducts }: { initialProducts: Shoe[] 
                 />
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="my-auto"
-              >
+              <motion.div className="my-auto">
                 <Link
                   href={`/preview/${activeProduct.id}`}
                   className="btn btn-primary"
-                  style={{
-                    color: "white",
-                  }}
+                  style={{ color: "white" }}
                 >
                   پیش‌نمایش محصول
                 </Link>
@@ -91,16 +67,7 @@ export default function Products({ initialProducts }: { initialProducts: Shoe[] 
         )}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{
-          duration: 1,
-          ease: "easeIn",
-          delay: 0.4,
-        }}
-        className="absolute bottom-2 left-0 w-full"
-      >
+      <motion.div className="absolute bottom-2 left-0 w-full">
         <Swiper
           modules={[Navigation, Autoplay]}
           spaceBetween={10}
@@ -111,7 +78,7 @@ export default function Products({ initialProducts }: { initialProducts: Shoe[] 
           onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
           className="w-full"
         >
-          {products.map((shoe, index) => (
+          {shoes.map((shoe, index) => (
             <SwiperSlide key={index}>
               <div className="flex flex-col items-center justify-center border p-4 rounded-lg shadow-md w-72 h-40 mx-auto">
                 {shoe.images.length > 0 && (
@@ -124,14 +91,7 @@ export default function Products({ initialProducts }: { initialProducts: Shoe[] 
                     unoptimized
                   />
                 )}
-                <h2
-                  className="text-center"
-                  style={{
-                    color: "var(--secondary-color)",
-                  }}
-                >
-                  {shoe.name}
-                </h2>
+                <h2 className="text-center">{shoe.name}</h2>
               </div>
             </SwiperSlide>
           ))}
