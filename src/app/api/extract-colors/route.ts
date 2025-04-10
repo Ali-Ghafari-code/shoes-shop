@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     if (!file) return NextResponse.json({ error: "تصویری ارسال نشده." }, { status: 400 });
 
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer np= Buffer.from(arrayBuffer);
 
     // مسیر جدید برای ذخیره‌سازی فایل در public/uploads
     const uploadDir = path.join("D:", "assets", "Shop", "shop", "public", "uploads");
