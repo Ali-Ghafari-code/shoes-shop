@@ -10,7 +10,6 @@ function Header() {
   const [navs, setNavs] = useState<{ name: string; slug: string }[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // اگر در صفحه ادمین هستیم، هدر رو مخفی کن
   if (pathname.includes("/admin")) {
     return null;
   }
@@ -56,8 +55,8 @@ function Header() {
           <Link
             href="/"
             className={`text-lg ${
-              pathname === "/" ? "text-white" : "text-gray-800"
-            } hover:text-gray-700`}
+              pathname === "/" ? "text-black" : "text-stone-50"
+            } hover:text-stone-50`}
           >
             خانه
           </Link>
@@ -67,9 +66,9 @@ function Header() {
               href={`/category/${item.slug}`}
               className={`text-lg ${
                 pathname === `/category/${item.slug}`
-                  ? "text-white"
-                  : "text-gray-600"
-              } hover:text-gray-500`}
+                  ? "text-black"
+                  : "text-stone-50"
+              } hover:text-stone-50`}
             >
               {item.name}
             </Link>

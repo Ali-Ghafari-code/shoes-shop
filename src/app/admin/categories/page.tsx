@@ -37,7 +37,7 @@ export default function ManageCategories() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg space-y-4">
         <h1 className="text-3xl font-bold text-center text-gray-800">
           📂 مدیریت دسته‌بندی‌ها

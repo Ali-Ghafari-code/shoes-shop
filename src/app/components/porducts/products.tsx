@@ -31,7 +31,7 @@ export default function Products({ initialProducts }: { initialProducts: Shoe[] 
 
   return (
     <div className="relative h-[86vh] w-full flex flex-col items-center justify-between overflow-y-clip">
-      <div className="w-full">
+      <div className="-mt-14 w-full">
         {activeProduct && activeProduct.images.length > 0 && (
           <motion.div
             key={activeProduct.id}
