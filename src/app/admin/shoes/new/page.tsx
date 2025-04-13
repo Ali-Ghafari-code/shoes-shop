@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { FaPlus } from "react-icons/fa";
+import { IoColorPaletteSharp } from "react-icons/io5";
+import "@/app/admin/style.css";
 
 export default function AddShoePage() {
   const [shoe, setShoe] = useState({
@@ -172,15 +175,19 @@ export default function AddShoePage() {
   
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+    <div className="relative min-h-scren bg-gradient-to-br  flex items-center justify-center p-6">
       <Toaster position="top-center" reverseOrder={false} />
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg space-y-4"
+        className="backdrop-blur-lg bg-white/10 shadow-lg rounded-2xl p-6 w-full max-w-lg space-y-4"
       >
-        <h1 className="text-3xl font-bold text-center text-gray-800">
-          ➕ افزودن کفش جدید
+        <div className="new_head">
+          <FaPlus className="admin_icons_new text-white" />
+          <h1 className="text-3xl font-bold text-center text-white">
+          افزودن کفش جدید
         </h1>
+
+        </div>
 
         <input
           type="text"
@@ -188,7 +195,7 @@ export default function AddShoePage() {
           value={shoe.name}
           onChange={(e) => setShoe({ ...shoe, name: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
         <input
@@ -197,7 +204,7 @@ export default function AddShoePage() {
           value={shoe.description}
           onChange={(e) => setShoe({ ...shoe, description: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
         <input
@@ -206,18 +213,18 @@ export default function AddShoePage() {
           value={shoe.price}
           onChange={(e) => setShoe({ ...shoe, price: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
         <select
           value={shoe.categoryId}
           onChange={handleCategoryChange}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         >
           <option value="">انتخاب دسته‌بندی</option>
           {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
+            <option key={cat.id} value={cat.id} className="text-dark">
               {cat.name}
             </option>
           ))}
@@ -229,7 +236,7 @@ export default function AddShoePage() {
           value={shoe.sizes}
           onChange={(e) => setShoe({ ...shoe, sizes: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
         {/* رنگ‌ها */}
@@ -262,7 +269,7 @@ export default function AddShoePage() {
           accept="image/*"
           multiple
           onChange={handleFileChange}
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
           required
         />
 
@@ -292,9 +299,12 @@ export default function AddShoePage() {
 
         {/* canvas برای انتخاب رنگ از عکس */}
         {images.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <label>🌈 انتخاب رنگ برای:</label>
+          <div className="space-y-2 flex flex-col w-full">
+            <div className="flex items-center ">
+              <label className="new_head">
+              <IoColorPaletteSharp />
+                انتخاب رنگ برای:
+                </label>
               <select
                 value={colorTarget}
                 onChange={(e) =>
@@ -308,7 +318,7 @@ export default function AddShoePage() {
             </div>
             <canvas
               id="colorCanvas"
-              className="w-full max-w-sm border rounded-lg cursor-crosshair"
+              className="w-full max-w-sm border mx-auto rounded-lg cursor-crosshair"
               onClick={handleCanvasClick}
             ></canvas>
           </div>
@@ -316,9 +326,10 @@ export default function AddShoePage() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+          className="w-full bg-indigo-700 text-white py-3 rounded-lg hover:bg-blue-700 transition new_head"
         >
-          ➕ افزودن کفش
+          <FaPlus className="admin_icons_new text-white" />
+           افزودن کفش
         </button>
       </form>
     </div>

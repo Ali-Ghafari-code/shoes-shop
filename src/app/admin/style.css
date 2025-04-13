@@ -40,3 +40,31 @@ ul li span {
 .admin_icons{
     font-size : 35px;
 }
+.admin_icons_new{
+    font-size : 20px;
+}
+.insert_btn{
+    width: 40px;
+    height: 40px;
+    display: flex;
+
+}
+.new_head{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: YekanBakhBold;
+    gap: 5px;
+}
+.new_head h1, h1 , label , select , option{
+    font-family: YekanBakhBold;
+}
+input{
+    font-family: YekanBakhBold;
+}
+.product_container{
+    height: 100%;
+}
+.cat_namaes{
+    font-size: 15px;
+}

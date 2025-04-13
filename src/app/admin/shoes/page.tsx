@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Shoe } from "@/types/shoe";
 import { MdDelete , MdEdit } from "react-icons/md";
+import { FaPlus } from "react-icons/fa6";
 import "@/app/admin/style.css";
 
 export default function ManageShoes() {
@@ -50,10 +51,9 @@ export default function ManageShoes() {
         <div className="flex justify-center mt-4">
           <a
             href="/admin/shoes/new"
-            className="bg-blue-600 text-white px-5 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all"
-          >
-            ➕ افزودن کفش جدید
-          </a>
+            className="bg-purple-950 text-white px-5 py-3 rounded-full shadow-md transition-all insert_btn">
+          <FaPlus />
+        </a>
         </div>
         <ul className="mt-6 space-y-4 w-full max-h-96 overflow-y-auto"> {/* تغییرات اینجا انجام شد */}
           {shoes.map((shoe) => (
