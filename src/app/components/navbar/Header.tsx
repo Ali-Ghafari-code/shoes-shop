@@ -10,6 +10,11 @@ function Header() {
   const [navs, setNavs] = useState<{ name: string; slug: string }[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // اگر در صفحه ادمین هستیم، هدر رو مخفی کن
+  if (pathname.includes("/admin")) {
+    return null;
+  }
+
   useEffect(() => {
     const fetchSettings = async () => {
       const res = await fetch("/api/categories");
@@ -43,7 +48,9 @@ function Header() {
             )}
           </motion.div>
         </button>
-        <div className="text-xl font-bold">لوگو</div>
+        <div className="text-xl font-bold">
+          <img src="/logo.jpg" alt="لوگو" className="size-10 rounded-4xl"/>
+        </div>
 
         <nav className="hidden md:flex space-x-6">
           <Link

@@ -1,91 +1,30 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import { motion } from 'framer-motion';
-import Link from "next/link";
+import ProductDetails from "@/app/preview/components/Product/ProductDetails";
 
-async function getProduct(id: string) {
-  const res = await fetch(`http://localhost:3000/api/shoes/${id}`, {
+type Params = {
+  params: { id: string };
+};
+
+export default async function ProductPreview({ params }: Params) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/shoes/${params.id}`, {
     cache: "no-store",
   });
 
-  if (!res.ok) return null;
-  return res.json();
-}
+  if (!res.ok) return notFound();
 
-export default async function ProductPreviewPage({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id);
+  const product = await res.json();
 
-  if (!product) return notFound();
-
-  const images = product.images || [];
+  // Check if category is available, otherwise use a default message
+  const categoryName = product.category ? product.category.name : "دسته بندی نامشخص";
 
   return (
-    <div className="relative p-6 space-y-6 max-w-4xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.8 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex flex-col md:flex-row gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex-1"
-          >
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {images.length > 0 ? (
-                images.map((img: { url: string }, idx: number) => (
-                  <Image
-                    key={idx}
-                    src={img.url}
-                    alt={`عکس ${idx + 1}`}
-                    width={300}
-                    height={300}
-                    className="rounded-lg object-cover"
-                    unoptimized
-                  />
-                ))
-              ) : (
-                <p>تصویری برای نمایش موجود نیست</p>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Right: Product Details */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex-1 space-y-6"
-          >
-            <h1 className="text-3xl font-bold">{product.name}</h1>
-            <p className="text-lg text-gray-700">{product.description}</p>
-            <h3 className="text-xl font-semibold">قیمت: {product.price.toLocaleString()} تومان</h3>
-
-            {/* Dropdown for selecting size */}
-            <div className="flex flex-col gap-2 w-64">
-              <label htmlFor="size" className="text-right font-medium">انتخاب سایز:</label>
-              {/* Add your size dropdown options here */}
-            </div>
-
-            <Link
-              href={`/preview/${product.id}`}
-              passHref
-            >
-              <motion.button
-                className="w-full md:w-auto mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.4 }}
-              >
-                پیش‌نمایش محصول
-              </motion.button>
-            </Link>
-          </motion.div>
-        </div>
-      </motion.div>
-    </div>
+    <ProductDetails
+      name={product.name}
+      category={categoryName}
+      imageUrl={product.images.length > 0 ? product.images[0].url : ""}
+      price={product.price}
+      description={product.description}
+    />
   );
 }
+

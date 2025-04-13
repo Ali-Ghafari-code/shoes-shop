@@ -40,10 +40,10 @@ export default function ManageShoes() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center bg-gray-100 p-6 justify-center backdrop-blur-lg bg-white/10 border border-white/20 shadow-lg">
+    <div className="relative h-[100vh] flex flex-col items-center bg-gray-100 p-6 justify-center backdrop-blur-lg bg-white/10 border border-white/20 shadow-lg overflow-y-clip">
       <Toaster position="top-center" reverseOrder={false} />{" "}
       {/* اضافه شدن Toaster */}
-      <div className="backdrop-blur-lg bg-white/10 shadow-lg rounded-2xl p-6 w-full max-w-lg">
+      <div className="backdrop-blur-lg bg-white/10 shadow-lg rounded-2xl p-6 w-full max-w-lg ">
         <h1 className="text-4xl font-bold text-center text-gray-800 store_heading text-white">
           مدیریت کفش‌ها
         </h1>
@@ -55,7 +55,7 @@ export default function ManageShoes() {
             ➕ افزودن کفش جدید
           </a>
         </div>
-        <ul className="mt-6 space-y-4 w-full">
+        <ul className="mt-6 space-y-4 w-full max-h-96 overflow-y-auto"> {/* تغییرات اینجا انجام شد */}
           {shoes.map((shoe) => (
             <li
               key={shoe.id}

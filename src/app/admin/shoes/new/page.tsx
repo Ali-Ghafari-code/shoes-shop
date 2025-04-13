@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -20,6 +20,8 @@ export default function AddShoePage() {
     { id: string; name: string; slug: string }[]
   >([]);
 
+  const [colorTarget, setColorTarget] = useState<"main" | "secondary">("main");
+
   useEffect(() => {
     fetch("/api/categories")
       .then((res) => res.json())
@@ -39,8 +41,6 @@ export default function AddShoePage() {
       const files = Array.from(e.target.files);
       const newImages = [...images, ...files];
       setImages(newImages);
-
-      // فقط از اولین عکس جدید رنگ بگیر
       if (files[0]) extractColors(files[0]);
     }
   };
@@ -93,10 +93,7 @@ export default function AddShoePage() {
     formData.append("mainColor", shoe.mainColor);
     formData.append("secondaryColor", shoe.secondaryColor);
     formData.append("existing", String(shoe.existing));
-
-    images.forEach((image) => {
-      formData.append("images", image);
-    });
+    images.forEach((image) => formData.append("images", image));
 
     const response = await fetch("/api/shoes", {
       method: "POST",
@@ -121,6 +118,58 @@ export default function AddShoePage() {
       toast.error("❌ خطا در اضافه کردن کفش");
     }
   };
+
+  // رسم عکس روی canvas وقتی عکس اضافه شد
+  useEffect(() => {
+    if (images.length === 0) return;
+
+    const canvas = document.getElementById("colorCanvas") as HTMLCanvasElement;
+    const ctx = canvas?.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.src = URL.createObjectURL(images[0]);
+    img.onload = () => {
+      const scale = 300 / img.width; // محدودیت اندازه
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+  }, [images]);
+
+  const handleCanvasClick = (
+    e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
+    const canvas = e.currentTarget;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+  
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+  
+    // نسبت ابعاد واقعی به ابعاد canvas
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+  
+    // مختصات واقعی
+    const realX = Math.floor(x * scaleX);
+    const realY = Math.floor(y * scaleY);
+  
+    const pixel = ctx.getImageData(realX, realY, 1, 1).data;
+    const hex = `#${[pixel[0], pixel[1], pixel[2]]
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join("")}`;
+  
+    if (colorTarget === "main") {
+      setShoe((prev) => ({ ...prev, mainColor: hex }));
+      toast.success(`🎨 رنگ اصلی انتخاب شد: ${hex}`);
+    } else {
+      setShoe((prev) => ({ ...prev, secondaryColor: hex }));
+      toast.success(`🎨 رنگ فرعی انتخاب شد: ${hex}`);
+    }
+  };
+  
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
@@ -183,18 +232,18 @@ export default function AddShoePage() {
           className="w-full px-4 py-2 border rounded-lg"
         />
 
-        {/* رنگ اصلی */}
+        {/* رنگ‌ها */}
         <div className="flex items-center justify-between">
           <label>🎨 رنگ اصلی:</label>
           <input
             type="color"
             value={shoe.mainColor}
-            onChange={(e) => setShoe({ ...shoe, mainColor: e.target.value })}
+            onChange={(e) =>
+              setShoe({ ...shoe, mainColor: e.target.value })
+            }
             className="w-12 h-12 rounded-full border-2"
           />
         </div>
-
-        {/* رنگ فرعی */}
         <div className="flex items-center justify-between">
           <label>🎨 رنگ فرعی:</label>
           <input
@@ -207,15 +256,17 @@ export default function AddShoePage() {
           />
         </div>
 
+        {/* فایل */}
         <input
           type="file"
           accept="image/*"
           multiple
-          onChange={handleFileChange}  // اتصال درست handleFileChange به onChange
+          onChange={handleFileChange}
           className="w-full px-4 py-2 border rounded-lg"
           required
         />
 
+        {/* پیش‌نمایش عکس‌ها */}
         {images.length > 0 && (
           <div className="grid grid-cols-3 gap-4">
             {images.map((img, index) => (
@@ -227,15 +278,39 @@ export default function AddShoePage() {
                 />
                 <button
                   type="button"
-                  onClick={() => {
-                    setImages(images.filter((_, i) => i !== index));
-                  }}
+                  onClick={() =>
+                    setImages(images.filter((_, i) => i !== index))
+                  }
                   className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs opacity-80 group-hover:opacity-100"
                 >
                   ❌
                 </button>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* canvas برای انتخاب رنگ از عکس */}
+        {images.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <label>🌈 انتخاب رنگ برای:</label>
+              <select
+                value={colorTarget}
+                onChange={(e) =>
+                  setColorTarget(e.target.value as "main" | "secondary")
+                }
+                className="border px-2 py-1 rounded"
+              >
+                <option value="main">رنگ اصلی</option>
+                <option value="secondary">رنگ فرعی</option>
+              </select>
+            </div>
+            <canvas
+              id="colorCanvas"
+              className="w-full max-w-sm border rounded-lg cursor-crosshair"
+              onClick={handleCanvasClick}
+            ></canvas>
           </div>
         )}
 

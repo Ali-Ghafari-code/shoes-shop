@@ -27,6 +27,7 @@ model Shoe {
   secondaryColor String  
   images      ShoeImage[]
   sizes       ShoeSize[]
+  cartItems  CartItem[]
 }
 
 model ShoeImage {
@@ -53,4 +54,22 @@ model Category {
 model SiteSettings {
   id        String  @id @default(uuid())
   theme     String  
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String   // اگر می‌خواهی سبد خرید به یک کاربر خاص اختصاص یابد
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  quantity  Int      @default(1)
+  price     Float
+  shoeId    String
+  cartId    String
+  shoe      Shoe     @relation(fields: [shoeId], references: [id])
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
 }
