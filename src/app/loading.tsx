@@ -5,7 +5,7 @@ const LoadingComponent = () => {
   return (
     <div className={styles.loader}>
       <img src="/loading.gif" alt="loading..."
-      className='z-10 size-42 object-fit' />
+      className='z-10' />
     </div>
   );
 };

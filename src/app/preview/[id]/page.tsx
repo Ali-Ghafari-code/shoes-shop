@@ -6,25 +6,29 @@ type Params = {
 };
 
 export default async function ProductPreview({ params }: Params) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/shoes/${params.id}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/shoes/${params.id}`,
+    {
+      cache: "no-store",
+    }
+  );
 
   if (!res.ok) return notFound();
 
   const product = await res.json();
 
   // Check if category is available, otherwise use a default message
-  const categoryName = product.category ? product.category.name : "دسته بندی نامشخص";
+  const categoryName = product.category
+    ? product.category.name
+    : "دسته بندی نامشخص";
 
   return (
     <ProductDetails
       name={product.name}
       category={categoryName}
-      imageUrl={product.images.length > 0 ? product.images[0].url : ""}
+      imageUrl={product.images.map((img: any) => img.url)}
       price={product.price}
       description={product.description}
     />
   );
 }
-
