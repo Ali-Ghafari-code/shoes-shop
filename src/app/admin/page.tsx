@@ -1,38 +1,52 @@
 import Link from "next/link";
+import "@/app/admin/style.css";
+import { GiSonicShoes } from "react-icons/gi";
+import { BiSolidCategoryAlt } from "react-icons/bi";
+import { IoMdSettings } from "react-icons/io";
+
 
 export default function AdminPage() {
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800">مدیریت فروشگاه</h1>
-        <ul className="mt-6 space-y-4">
-          <li>
+    <div className="min-h-screen bg-gradient-to-br  flex items-center justify-center p-6 relative ">
+      <div className=" border border-white/20 shadow-lg rounded-3xl p-8 w-full max-w-md flex flex-col items-stretch justify-around  main_contain">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-center text-white mb-8 store_heading">
+            پنل مدیریت فروشگاه
+        </h1>
+
+        <ul className="space-y-8">
+        <li>
             <Link
               href="/admin/shoes"
-              className="flex items-center justify-between bg-blue-600 text-white py-3 px-5 rounded-lg shadow-md hover:bg-blue-700 transition-all"
+              className="flex items-center justify-between border border-3 border-indigo-950 text-white py-4 px-6 rounded-xl hover:bg-blue-900 transition-all group"
             >
-              <span>👟 مدیریت کفش‌ها</span>
-              <span>➡</span>
+              <span className="text-lg font-medium group-hover:translate-x-1 transition ">
+                مدیریت کفش‌ها
+              </span>
+              <GiSonicShoes className="text-white admin_icons"/>
             </Link>
           </li>
           <li>
             <Link
               href="/admin/categories"
-              className="flex items-center justify-between bg-green-600 text-white py-3 px-5 rounded-lg shadow-md hover:bg-green-700 transition-all"
+              className="flex items-center justify-between border border-3 border-indigo-950 text-white py-4 px-6 rounded-xl hover:bg-blue-900 transition-all group"
             >
-              <span>📂 مدیریت دسته‌بندی‌ها</span>
-              <span>➡</span>
+              <span className="text-lg font-medium group-hover:translate-x-1 transition">
+                مدیریت دسته‌بندی‌ها
+              </span>
+              <BiSolidCategoryAlt className="text-white admin_icons" />
             </Link>
           </li>
+
           <li>
-            <Link
-              href="/admin/settings"
-              className="flex items-center justify-between bg-gray-800 text-white py-3 px-5 rounded-lg shadow-md hover:bg-gray-900 transition-all"
-            >
-              <span>⚙ تنظیمات سایت</span>
-              <span>➡</span>
-            </Link>
-          </li>
+          <Link
+            href="/admin/settings"
+            className="flex items-center justify-between border border-3 border-indigo-950 text-white py-4 px-6 rounded-xl hover:bg-blue-900 transition-all group"
+          >
+            <span className="text-lg font-medium group-hover:translate-x-1 transition">تنظیمات سایت</span>
+            <IoMdSettings className="text-white admin_icons" />
+          </Link>
+        </li>
+
         </ul>
       </div>
     </div>

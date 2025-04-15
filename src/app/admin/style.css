@@ -1,0 +1,70 @@
+@font-face {
+    font-family: YekanBakhHeavy;
+    font-style: normal;
+    font-weight: 900;
+    src: url('../../../public/uploads/font/YekanBakh-Heavy.630c4fa4.woff') format('woff');
+}
+@font-face {
+    font-family: YekanBakhMediunm;
+    font-style: normal;
+    font-weight: 500;
+    src: url('../../../public/uploads/font/YekanBakh-Medium.f7360956.woff') format('woff');
+
+}
+@font-face {
+    font-family: YekanBakhFat;
+    font-style: normal;
+    font-weight: 800;
+    src: url('../../../public/uploads/font/YekanBakh-Fat.e508fcc6.woff') format('woff');
+}
+@font-face {
+    font-family: YekanBakhBold;
+    font-style: normal;
+    font-weight: 700;
+    src: url('../../../public/uploads/font/YekanBakh-Bold.bbd877a3.woff') format('woff');
+}
+.store_heading{
+    font-family: YekanBakhFat;
+    word-spacing: 5px;
+}
+.main_contain{
+    height: 430px;
+}
+ul li span {
+    font-family: YekanBakhBold;
+    font-size: 19px;
+}
+.item_list{
+    font-family: YekanBakhMediunm;
+}
+.admin_icons{
+    font-size : 35px;
+}
+.admin_icons_new{
+    font-size : 20px;
+}
+.insert_btn{
+    width: 40px;
+    height: 40px;
+    display: flex;
+
+}
+.new_head{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: YekanBakhBold;
+    gap: 5px;
+}
+.new_head h1, h1 , label , select , option{
+    font-family: YekanBakhBold;
+}
+input{
+    font-family: YekanBakhBold;
+}
+.product_container{
+    height: 100%;
+}
+.cat_namaes{
+    font-size: 15px;
+}

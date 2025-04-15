@@ -1,6 +1,9 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { FaPlus } from "react-icons/fa";
+import { IoColorPaletteSharp } from "react-icons/io5";
+import "@/app/admin/style.css";
 
 export default function AddShoePage() {
   const [shoe, setShoe] = useState({
@@ -19,6 +22,8 @@ export default function AddShoePage() {
   const [categories, setCategories] = useState<
     { id: string; name: string; slug: string }[]
   >([]);
+
+  const [colorTarget, setColorTarget] = useState<"main" | "secondary">("main");
 
   useEffect(() => {
     fetch("/api/categories")
@@ -39,8 +44,6 @@ export default function AddShoePage() {
       const files = Array.from(e.target.files);
       const newImages = [...images, ...files];
       setImages(newImages);
-
-      // فقط از اولین عکس جدید رنگ بگیر
       if (files[0]) extractColors(files[0]);
     }
   };
@@ -93,10 +96,7 @@ export default function AddShoePage() {
     formData.append("mainColor", shoe.mainColor);
     formData.append("secondaryColor", shoe.secondaryColor);
     formData.append("existing", String(shoe.existing));
-
-    images.forEach((image) => {
-      formData.append("images", image);
-    });
+    images.forEach((image) => formData.append("images", image));
 
     const response = await fetch("/api/shoes", {
       method: "POST",
@@ -122,16 +122,72 @@ export default function AddShoePage() {
     }
   };
 
+  // رسم عکس روی canvas وقتی عکس اضافه شد
+  useEffect(() => {
+    if (images.length === 0) return;
+
+    const canvas = document.getElementById("colorCanvas") as HTMLCanvasElement;
+    const ctx = canvas?.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.src = URL.createObjectURL(images[0]);
+    img.onload = () => {
+      const scale = 300 / img.width; // محدودیت اندازه
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+  }, [images]);
+
+  const handleCanvasClick = (
+    e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
+    const canvas = e.currentTarget;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+  
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+  
+    // نسبت ابعاد واقعی به ابعاد canvas
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+  
+    // مختصات واقعی
+    const realX = Math.floor(x * scaleX);
+    const realY = Math.floor(y * scaleY);
+  
+    const pixel = ctx.getImageData(realX, realY, 1, 1).data;
+    const hex = `#${[pixel[0], pixel[1], pixel[2]]
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join("")}`;
+  
+    if (colorTarget === "main") {
+      setShoe((prev) => ({ ...prev, mainColor: hex }));
+      toast.success(`🎨 رنگ اصلی انتخاب شد: ${hex}`);
+    } else {
+      setShoe((prev) => ({ ...prev, secondaryColor: hex }));
+      toast.success(`🎨 رنگ فرعی انتخاب شد: ${hex}`);
+    }
+  };
+  
+
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+    <div className="relative min-h-scren bg-gradient-to-br  flex items-center justify-center p-6">
       <Toaster position="top-center" reverseOrder={false} />
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg space-y-4"
+        className="backdrop-blur-lg bg-white/10 shadow-lg rounded-2xl p-6 w-full max-w-lg space-y-4"
       >
-        <h1 className="text-3xl font-bold text-center text-gray-800">
-          ➕ افزودن کفش جدید
+        <div className="new_head">
+          <FaPlus className="admin_icons_new text-white" />
+          <h1 className="text-3xl font-bold text-center text-white">
+          افزودن کفش جدید
         </h1>
+
+        </div>
 
         <input
           type="text"
@@ -139,7 +195,7 @@ export default function AddShoePage() {
           value={shoe.name}
           onChange={(e) => setShoe({ ...shoe, name: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
         <input
@@ -148,7 +204,7 @@ export default function AddShoePage() {
           value={shoe.description}
           onChange={(e) => setShoe({ ...shoe, description: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
         <input
@@ -157,18 +213,18 @@ export default function AddShoePage() {
           value={shoe.price}
           onChange={(e) => setShoe({ ...shoe, price: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
         <select
           value={shoe.categoryId}
           onChange={handleCategoryChange}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         >
           <option value="">انتخاب دسته‌بندی</option>
           {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
+            <option key={cat.id} value={cat.id} className="text-dark">
               {cat.name}
             </option>
           ))}
@@ -180,21 +236,21 @@ export default function AddShoePage() {
           value={shoe.sizes}
           onChange={(e) => setShoe({ ...shoe, sizes: e.target.value })}
           required
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
         />
 
-        {/* رنگ اصلی */}
+        {/* رنگ‌ها */}
         <div className="flex items-center justify-between">
           <label>🎨 رنگ اصلی:</label>
           <input
             type="color"
             value={shoe.mainColor}
-            onChange={(e) => setShoe({ ...shoe, mainColor: e.target.value })}
+            onChange={(e) =>
+              setShoe({ ...shoe, mainColor: e.target.value })
+            }
             className="w-12 h-12 rounded-full border-2"
           />
         </div>
-
-        {/* رنگ فرعی */}
         <div className="flex items-center justify-between">
           <label>🎨 رنگ فرعی:</label>
           <input
@@ -207,15 +263,17 @@ export default function AddShoePage() {
           />
         </div>
 
+        {/* فایل */}
         <input
           type="file"
           accept="image/*"
           multiple
-          onChange={handleFileChange}  // اتصال درست handleFileChange به onChange
-          className="w-full px-4 py-2 border rounded-lg"
+          onChange={handleFileChange}
+          className="w-full px-4 py-2 border-2 rounded-xl border-red-50 text-white"
           required
         />
 
+        {/* پیش‌نمایش عکس‌ها */}
         {images.length > 0 && (
           <div className="grid grid-cols-3 gap-4">
             {images.map((img, index) => (
@@ -227,9 +285,9 @@ export default function AddShoePage() {
                 />
                 <button
                   type="button"
-                  onClick={() => {
-                    setImages(images.filter((_, i) => i !== index));
-                  }}
+                  onClick={() =>
+                    setImages(images.filter((_, i) => i !== index))
+                  }
                   className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs opacity-80 group-hover:opacity-100"
                 >
                   ❌
@@ -239,11 +297,39 @@ export default function AddShoePage() {
           </div>
         )}
 
+        {/* canvas برای انتخاب رنگ از عکس */}
+        {images.length > 0 && (
+          <div className="space-y-2 flex flex-col w-full">
+            <div className="flex items-center ">
+              <label className="new_head">
+              <IoColorPaletteSharp />
+                انتخاب رنگ برای:
+                </label>
+              <select
+                value={colorTarget}
+                onChange={(e) =>
+                  setColorTarget(e.target.value as "main" | "secondary")
+                }
+                className="border px-2 py-1 rounded"
+              >
+                <option value="main">رنگ اصلی</option>
+                <option value="secondary">رنگ فرعی</option>
+              </select>
+            </div>
+            <canvas
+              id="colorCanvas"
+              className="w-full max-w-sm border mx-auto rounded-lg cursor-crosshair"
+              onClick={handleCanvasClick}
+            ></canvas>
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+          className="w-full bg-indigo-700 text-white py-3 rounded-lg hover:bg-blue-700 transition new_head"
         >
-          ➕ افزودن کفش
+          <FaPlus className="admin_icons_new text-white" />
+           افزودن کفش
         </button>
       </form>
     </div>

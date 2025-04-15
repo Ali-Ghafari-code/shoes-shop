@@ -10,6 +10,10 @@ function Header() {
   const [navs, setNavs] = useState<{ name: string; slug: string }[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  if (pathname.includes("/admin")) {
+    return null;
+  }
+
   useEffect(() => {
     const fetchSettings = async () => {
       const res = await fetch("/api/categories");
@@ -43,14 +47,16 @@ function Header() {
             )}
           </motion.div>
         </button>
-        <div className="text-xl font-bold">لوگو</div>
+        <div className="text-xl font-bold">
+          <img src="/logo.jpg" alt="لوگو" className="size-10 rounded-4xl"/>
+        </div>
 
         <nav className="hidden md:flex space-x-6">
           <Link
             href="/"
             className={`text-lg ${
-              pathname === "/" ? "text-white" : "text-gray-800"
-            } hover:text-gray-700`}
+              pathname === "/" ? "text-black" : "text-stone-50"
+            } hover:text-stone-50`}
           >
             خانه
           </Link>
@@ -60,9 +66,9 @@ function Header() {
               href={`/category/${item.slug}`}
               className={`text-lg ${
                 pathname === `/category/${item.slug}`
-                  ? "text-white"
-                  : "text-gray-600"
-              } hover:text-gray-500`}
+                  ? "text-black"
+                  : "text-stone-50"
+              } hover:text-stone-50`}
             >
               {item.name}
             </Link>
